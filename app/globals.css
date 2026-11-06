@@ -1,0 +1,16 @@
+/*
+ * Minimal global resets only.
+ * Colours, fonts, and backgrounds are controlled by the MUI theme
+ * (app/theme.ts) and CssBaseline — never hardcode them here.
+ */
+html,
+body {
+  height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
