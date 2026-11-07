@@ -24,6 +24,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [remembered, setRemembered] = useState(false);
 
   // If already signed in, skip the magic-link step entirely.
   useEffect(() => {
@@ -32,10 +33,31 @@ export default function LoginPage() {
     });
   }, [router]);
 
+  // Pre-fill the email we remembered from a previous sign-in (convenience only).
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("momentum:lastEmail");
+      if (saved) {
+        setEmail(saved);
+        setRemembered(true);
+      }
+    } catch {
+      // localStorage can be blocked (private mode) — just skip the convenience.
+    }
+  }, []);
+
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
     setStatus("sending");
     setErrorMsg("");
+
+    // Remember the email as soon as they try — even if the send fails
+    // (e.g. rate limit), so we never lose what they typed.
+    try {
+      localStorage.setItem("momentum:lastEmail", email);
+    } catch {
+      // ignore if storage is unavailable
+    }
 
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -74,7 +96,7 @@ export default function LoginPage() {
       <Container maxWidth="xs">
         <Stack spacing={3} sx={{ textAlign: "center" }}>
           <Typography component="h1" variant="h1" sx={{ fontSize: "2.5rem" }}>
-            Welcome
+            {remembered ? "Welcome back" : "Welcome"}
           </Typography>
 
           {status === "sent" ? (
