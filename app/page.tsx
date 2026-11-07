@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
+import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 
 export default function Home() {
@@ -54,10 +55,22 @@ export default function Home() {
             spacing={2}
             sx={{ pt: 1, width: "100%", justifyContent: "center" }}
           >
-            <Button variant="contained" color="primary" size="large">
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              component={Link}
+              href="/login"
+            >
               Get started
             </Button>
-            <Button variant="outlined" color="primary" size="large">
+            <Button
+              variant="outlined"
+              color="primary"
+              size="large"
+              component={Link}
+              href="/login"
+            >
               I already have an account
             </Button>
           </Stack>
