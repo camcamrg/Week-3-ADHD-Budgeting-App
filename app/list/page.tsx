@@ -261,8 +261,8 @@ export default function ListPage() {
             </Stack>
           )}
 
-          <Button component={Link} href="/account" variant="text" size="small" sx={{ alignSelf: "center" }}>
-            Account
+          <Button component={Link} href="/home" variant="text" size="small" sx={{ alignSelf: "center" }}>
+            ← Home
           </Button>
         </Stack>
       </Container>

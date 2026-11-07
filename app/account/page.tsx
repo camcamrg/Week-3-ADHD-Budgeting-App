@@ -77,8 +77,8 @@ export default function AccountPage() {
                 Signed in as <strong>{email}</strong>
               </Typography>
               <Stack direction="row" spacing={1.5}>
-                <Button variant="contained" color="primary" component={Link} href="/list">
-                  Go to your List
+                <Button variant="contained" color="primary" component={Link} href="/home">
+                  Go to Momentum
                 </Button>
                 <Button variant="outlined" color="primary" onClick={handleSignOut}>
                   Sign out
