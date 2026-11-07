@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
@@ -8,8 +9,22 @@ import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function Home() {
+  // null = still checking, true/false = known sign-in state.
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSignedIn(!!data.session);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSignedIn(!!session);
+    });
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
   return (
     <Box
       component="main"
@@ -57,24 +72,39 @@ export default function Home() {
             spacing={2}
             sx={{ pt: 1, width: "100%", justifyContent: "center" }}
           >
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              component={Link}
-              href="/login"
-            >
-              Get started
-            </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="large"
-              component={Link}
-              href="/login"
-            >
-              I already have an account
-            </Button>
+            {signedIn ? (
+              // Already signed in — don't ask again; just let them back in.
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                component={Link}
+                href="/account"
+              >
+                Continue
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  component={Link}
+                  href="/login"
+                >
+                  Get started
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="large"
+                  component={Link}
+                  href="/login"
+                >
+                  I already have an account
+                </Button>
+              </>
+            )}
           </Stack>
 
           <Typography variant="body2" color="text.secondary" sx={{ pt: 2 }}>

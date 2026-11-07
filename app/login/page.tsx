@@ -3,7 +3,8 @@
 // Passwordless sign-in: the user enters their email and gets a magic link.
 // No password is ever created or stored (per the Momentum spec).
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Container,
@@ -19,9 +20,17 @@ import ThemeToggle from "../ThemeToggle";
 type Status = "idle" | "sending" | "sent" | "error";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+
+  // If already signed in, skip the magic-link step entirely.
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) router.replace("/account");
+    });
+  }, [router]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
