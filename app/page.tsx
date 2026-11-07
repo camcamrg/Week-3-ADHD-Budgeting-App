@@ -79,7 +79,7 @@ export default function Home() {
                 color="primary"
                 size="large"
                 component={Link}
-                href="/account"
+                href="/list"
               >
                 Continue
               </Button>

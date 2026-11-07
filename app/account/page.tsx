@@ -76,9 +76,14 @@ export default function AccountPage() {
               <Typography variant="body1" color="text.secondary">
                 Signed in as <strong>{email}</strong>
               </Typography>
-              <Button variant="outlined" color="primary" onClick={handleSignOut}>
-                Sign out
-              </Button>
+              <Stack direction="row" spacing={1.5}>
+                <Button variant="contained" color="primary" component={Link} href="/list">
+                  Go to your List
+                </Button>
+                <Button variant="outlined" color="primary" onClick={handleSignOut}>
+                  Sign out
+                </Button>
+              </Stack>
             </>
           ) : (
             <>

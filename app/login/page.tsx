@@ -28,7 +28,7 @@ export default function LoginPage() {
   // If already signed in, skip the magic-link step entirely.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace("/account");
+      if (data.session) router.replace("/list");
     });
   }, [router]);
 
