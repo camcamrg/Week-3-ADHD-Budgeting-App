@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Momentum
 
-## Getting Started
+A calm, ADHD-friendly budgeting app that keeps **money and time in one place**.
 
-First, run the development server:
+Most budgeting apps assume you'll remember to come back, read a chart, and do the
+math. Momentum is built the opposite way: it's quiet, it tells you the one number
+and the one next thing, and it's forgiving when you've been away. The whole MVP is
+**"two screens and one rule":**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **The List** — your bills *and* your tasks in a single list, sorted by what's due next.
+- **Home** — your **Safe-to-Spend** (money you can spend without missing a bill) plus the single next thing to do.
+
+🔗 **Live app:** https://week-3-adhd-budgeting-app.vercel.app/
+
+---
+
+## How it's built (three tiers)
+
+```
+Screens (browser)  →  Server code (Vercel)  →  Database (Supabase)
+Next.js + MUI         Server Actions + auth      Postgres + Row-Level Security
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Tier 1 — Screens:** [Next.js](https://nextjs.org) 16 (App Router, React 19) with [Material UI](https://mui.com) v9, themed from `app/theme.ts` (warm palette, Lexend font, light/dark).
+- **Tier 2 — Server code:** all database work runs in **Server Actions** (`app/actions/`), never from the browser. A `proxy.ts` keeps the sign-in session fresh, and `app/auth/callback` handles magic-link sign-in.
+- **Tier 3 — Database:** [Supabase](https://supabase.com) Postgres. Two tables (`profiles`, `items`), with the schema and access rules stored as migrations in `supabase/migrations/`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Sign-in is passwordless** — you get a one-time magic link by email, no password to remember.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+**Security = two locks:** the server performs every database call as the signed-in
+user, *and* Row-Level Security (RLS) independently enforces "you can only see your
+own rows" at the database. Either lock alone would be safe; together they're
+defense in depth. See [`docs/architecture.md`](docs/architecture.md).
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Run it on your computer
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**You'll need:** [Node.js](https://nodejs.org) 20+ and a free [Supabase](https://supabase.com) project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. **Get the code and install:**
+   ```bash
+   git clone git@github.com:camcamrg/Week-3-ADHD-Budgeting-App.git
+   cd Week-3-ADHD-Budgeting-App
+   npm install
+   ```
 
-## Deploy on Vercel
+2. **Add your keys.** Copy the template and fill in your Supabase values:
+   ```bash
+   cp .env.example .env
+   ```
+   Then set in `.env`:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+   > `.env` is gitignored — real keys never go into GitHub.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+3. **Set up the database.** In your Supabase project's SQL Editor, run the migration
+   files in order: `supabase/migrations/0001_init.sql`, then `0002_rls_policies.sql`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+4. **Start it:**
+   ```bash
+   npm run dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000).
+
+### Scripts
+| Command | What it does |
+|---|---|
+| `npm run dev` | Start the local dev server |
+| `npm run build` | Production build (run this before pushing — it's stricter than dev) |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Check code style |
+
+---
+
+## How changes get deployed
+
+Vercel hosts the app and auto-publishes the **`main`** branch. To keep untested work
+off the live site, building happens on the **`dev`** branch:
+
+```
+build on dev  →  test (locally + Vercel preview)  →  merge dev → main  →  live
+```
+
+Pushing `dev` only creates a private Vercel **preview** — never the public site. Only
+merging into `main` launches.
+
+---
+
+## Project docs
+
+- [`docs/architecture.md`](docs/architecture.md) — the three-tier design and data flow
+- [`docs/adr/`](docs/adr/) — Architecture Decision Records (why Next.js + MUI, Vercel, Supabase, server-side data access)
+- [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) — real problems hit while building, and their fixes
+
+---
+
+*Built for the AI Development Residency (Week 4).*
