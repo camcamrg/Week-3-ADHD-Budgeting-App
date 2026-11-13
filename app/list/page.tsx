@@ -23,12 +23,15 @@ import {
   CardContent,
   CircularProgress,
   Alert,
+  FormControlLabel,
+  MenuItem,
 } from "@mui/material";
 import { supabase } from "@/lib/supabaseClient";
 import { getItems, addItem, toggleItem, deleteItem } from "@/app/actions/items";
 import ThemeToggle from "../ThemeToggle";
 
 type ItemType = "bill" | "task";
+type RecurEvery = "day" | "week" | "month" | "year";
 
 type Item = {
   id: string;
@@ -37,6 +40,16 @@ type Item = {
   amount: number | null;
   due_date: string | null;
   is_done: boolean;
+  is_recurring: boolean;
+  recurs_every: RecurEvery | null;
+};
+
+// Turn "month" into a friendly word for the badge.
+const RECUR_LABEL: Record<RecurEvery, string> = {
+  day: "daily",
+  week: "weekly",
+  month: "monthly",
+  year: "yearly",
 };
 
 export default function ListPage() {
@@ -50,6 +63,8 @@ export default function ListPage() {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [recursEvery, setRecursEvery] = useState<RecurEvery>("month");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -88,10 +103,13 @@ export default function ListPage() {
         title: title.trim(),
         amount: type === "bill" && amount !== "" ? Number(amount) : null,
         due_date: dueDate || null,
+        is_recurring: isRecurring,
+        recurs_every: isRecurring ? recursEvery : null,
       });
       setTitle("");
       setAmount("");
       setDueDate("");
+      setIsRecurring(false);
       await loadItems();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not add that item.");
@@ -185,6 +203,31 @@ export default function ListPage() {
                     slotProps={{ inputLabel: { shrink: true } }}
                   />
 
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={isRecurring}
+                        onChange={(e) => setIsRecurring(e.target.checked)}
+                      />
+                    }
+                    label="Repeats"
+                  />
+
+                  {isRecurring && (
+                    <TextField
+                      select
+                      label="How often?"
+                      value={recursEvery}
+                      onChange={(e) => setRecursEvery(e.target.value as RecurEvery)}
+                      fullWidth
+                    >
+                      <MenuItem value="day">Every day</MenuItem>
+                      <MenuItem value="week">Every week</MenuItem>
+                      <MenuItem value="month">Every month</MenuItem>
+                      <MenuItem value="year">Every year</MenuItem>
+                    </TextField>
+                  )}
+
                   {error && <Alert severity="error">{error}</Alert>}
 
                   <Button
@@ -237,6 +280,14 @@ export default function ListPage() {
                           color={item.type === "bill" ? "tertiary" : "secondary"}
                           variant="outlined"
                         />
+                        {item.is_recurring && item.recurs_every && (
+                          <Chip
+                            size="small"
+                            label={`↻ ${RECUR_LABEL[item.recurs_every]}`}
+                            color="primary"
+                            variant="outlined"
+                          />
+                        )}
                         {item.amount != null && (
                           <Typography variant="body2" color="text.secondary">
                             ${item.amount.toFixed(2)}
