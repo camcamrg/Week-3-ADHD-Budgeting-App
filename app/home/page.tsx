@@ -1,7 +1,8 @@
 "use client";
 
 // Home (Epic 3): the daily glance — Safe-to-Spend + the single next thing.
-// Safe-to-Spend = current balance − unpaid bills. Both come from the user's own rows (RLS).
+// Safe-to-Spend = current balance − unpaid bills. Data now comes from server
+// actions (getProfile, getItems); auth stays in the browser (cookie only).
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -20,6 +21,8 @@ import {
   Alert,
 } from "@mui/material";
 import { supabase } from "@/lib/supabaseClient";
+import { getItems } from "@/app/actions/items";
+import { getProfile, saveMoney } from "@/app/actions/profile";
 import ThemeToggle from "../ThemeToggle";
 
 type Item = {
@@ -33,7 +36,6 @@ type Item = {
 
 export default function HomePage() {
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -50,24 +52,23 @@ export default function HomePage() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [{ data: prof }, { data: itemData }] = await Promise.all([
-      supabase.from("profiles").select("current_balance, monthly_income").maybeSingle(),
-      supabase.from("items").select("*"),
-    ]);
-    setBalance(prof?.current_balance ?? null);
-    setIncome(prof?.monthly_income ?? null);
-    setItems((itemData ?? []) as Item[]);
+    try {
+      const [prof, itemData] = await Promise.all([getProfile(), getItems()]);
+      setBalance(prof?.current_balance ?? null);
+      setIncome(prof?.monthly_income ?? null);
+      setItems(itemData);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load your data.");
+    }
     setLoading(false);
   }, []);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      const uid = data.session?.user?.id ?? null;
-      if (!uid) {
+      if (!data.session) {
         router.replace("/login");
         return;
       }
-      setUserId(uid);
       setChecking(false);
       loadData();
     });
@@ -97,20 +98,19 @@ export default function HomePage() {
     setEditing(true);
   }
 
-  async function saveMoney(event: React.FormEvent) {
+  async function handleSaveMoney(event: React.FormEvent) {
     event.preventDefault();
-    if (!userId) return;
     setSaving(true);
     setError("");
-    const { error } = await supabase.from("profiles").upsert({
-      id: userId,
-      current_balance: balanceInput !== "" ? Number(balanceInput) : null,
-      monthly_income: incomeInput !== "" ? Number(incomeInput) : null,
-    });
-    if (error) setError(error.message);
-    else {
+    try {
+      await saveMoney({
+        balance: balanceInput !== "" ? Number(balanceInput) : null,
+        income: incomeInput !== "" ? Number(incomeInput) : null,
+      });
       setEditing(false);
       await loadData();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save your money.");
     }
     setSaving(false);
   }
@@ -195,7 +195,7 @@ export default function HomePage() {
           {editing && (
             <Card variant="outlined">
               <CardContent>
-                <Box component="form" onSubmit={saveMoney}>
+                <Box component="form" onSubmit={handleSaveMoney}>
                   <Stack spacing={2}>
                     <Typography variant="subtitle1">Your money</Typography>
                     <TextField

@@ -1,8 +1,9 @@
 "use client";
 
 // The List (Epic 2): the unified money + time list.
-// A signed-in user can add bills/tasks, see them by due date, mark them done, and remove them.
-// RLS guarantees each query only ever touches this user's own rows.
+// UI runs in the browser; all DATABASE work now goes through server actions
+// (app/actions/items.ts). Auth session checks still use the browser client,
+// since those just read the sign-in cookie — not the database tables.
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -24,6 +25,7 @@ import {
   Alert,
 } from "@mui/material";
 import { supabase } from "@/lib/supabaseClient";
+import { getItems, addItem, toggleItem, deleteItem } from "@/app/actions/items";
 import ThemeToggle from "../ThemeToggle";
 
 type ItemType = "bill" | "task";
@@ -39,7 +41,6 @@ type Item = {
 
 export default function ListPage() {
   const router = useRouter();
-  const [userId, setUserId] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
   const [items, setItems] = useState<Item[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
@@ -52,26 +53,25 @@ export default function ListPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // READ via the server action.
   const loadItems = useCallback(async () => {
     setLoadingItems(true);
-    const { data, error } = await supabase
-      .from("items")
-      .select("*")
-      .order("due_date", { ascending: true, nullsFirst: false });
-    if (error) setError(error.message);
-    else setItems((data ?? []) as Item[]);
+    try {
+      const data = await getItems();
+      setItems(data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not load your list.");
+    }
     setLoadingItems(false);
   }, []);
 
   // Require sign-in, then load the list.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      const uid = data.session?.user?.id ?? null;
-      if (!uid) {
+      if (!data.session) {
         router.replace("/login");
         return;
       }
-      setUserId(uid);
       setChecking(false);
       loadItems();
     });
@@ -79,36 +79,33 @@ export default function ListPage() {
 
   async function handleAdd(event: React.FormEvent) {
     event.preventDefault();
-    if (!userId || title.trim().length === 0) return;
+    if (title.trim().length === 0) return;
     setSaving(true);
     setError("");
-
-    const { error } = await supabase.from("items").insert({
-      user_id: userId, // must match auth.uid() — RLS enforces it
-      type,
-      title: title.trim(),
-      amount: type === "bill" && amount !== "" ? Number(amount) : null,
-      due_date: dueDate || null,
-    });
-
-    if (error) {
-      setError(error.message);
-    } else {
+    try {
+      await addItem({
+        type,
+        title: title.trim(),
+        amount: type === "bill" && amount !== "" ? Number(amount) : null,
+        due_date: dueDate || null,
+      });
       setTitle("");
       setAmount("");
       setDueDate("");
       await loadItems();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not add that item.");
     }
     setSaving(false);
   }
 
   async function toggleDone(item: Item) {
-    await supabase.from("items").update({ is_done: !item.is_done }).eq("id", item.id);
+    await toggleItem(item.id, !item.is_done);
     await loadItems();
   }
 
   async function removeItem(item: Item) {
-    await supabase.from("items").delete().eq("id", item.id);
+    await deleteItem(item.id);
     await loadItems();
   }
 

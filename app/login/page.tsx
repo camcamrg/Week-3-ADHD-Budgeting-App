@@ -63,7 +63,7 @@ export default function LoginPage() {
       email,
       options: {
         // Where the magic link sends the user back to once they click it.
-        emailRedirectTo: `${window.location.origin}/account`,
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
