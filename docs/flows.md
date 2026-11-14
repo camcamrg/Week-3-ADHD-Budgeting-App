@@ -70,9 +70,9 @@ flowchart TD
 
 ---
 
-## Flow 4 — The List: add, complete, delete
+## Flow 4 — The List: add, complete (incl. recurring), delete
 
-*Covers: "The List" scenarios (UC-4, UC-5, UC-6).*
+*Covers: "The List" and "Recurring items" scenarios (UC-4, UC-5, UC-6, UC-11).*
 
 ```mermaid
 flowchart TD
@@ -86,12 +86,18 @@ flowchart TD
     E --> F{Bill or Task?}
     F -- Bill --> BH[Enter title + amount + optional due date]
     F -- Task --> TH[Enter title + optional due date]
-    BH --> J{Title empty?}
-    TH --> J
+    BH --> RP{Repeats?}
+    TH --> RP
+    RP -- Yes --> RF[Pick frequency: day/week/month/year]
+    RP -- No --> J{Title empty?}
+    RF --> J
     J -- Yes --> K["'Add' button stays disabled"]
     J -- No --> L["Tap 'Add to my list'"]
     L --> M[Item saved, list reloads soonest-first]
-    D --> N["Tick checkbox: mark done (strikethrough)"]
+    D --> CK[Tick checkbox]
+    CK --> RC{Recurring?}
+    RC -- Yes --> RR["Due date rolls forward one cycle, stays active"]
+    RC -- No --> DN["Marked done (strikethrough)"]
     D --> O["Tap 'Delete': item removed"]
 ```
 

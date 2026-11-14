@@ -56,6 +56,8 @@ MVP does not do yet, so this document never over-claims.
 - **Main flow:** User ticks the item's checkbox → System marks it done → the item shows
   as completed and drops out of Safe-to-Spend and "next thing". Un-ticking reverses it.
 - **Outcome:** done items stop adding noise and stop counting against money.
+- **Note:** a *recurring* item does not stay done — completing it rolls its due date to
+  the next cycle and keeps it active (see UC-11).
 
 ### UC-6 — Delete an item
 - **Goal:** remove something added by mistake or no longer needed.
@@ -90,6 +92,17 @@ MVP does not do yet, so this document never over-claims.
 - **Main flow:** User opens the account page → System shows "Signed in as <email>" with a
   way into the app and a Sign out button, or "Not signed in" with a link to sign in.
 - **Outcome:** the user always knows their status and how to proceed.
+
+### UC-11 — Make a bill or task repeat
+- **Goal:** set something up once that happens on a cycle (rent every month, a weekly
+  chore), instead of re-adding it each time.
+- **Precondition:** signed in; adding an item on The List.
+- **Main flow:** User fills in an item → ticks **Repeats** → picks a frequency
+  (day / week / month / year) → taps "Add to my list". Later, when the user checks the
+  item off, the System moves its due date **forward by one cycle** and keeps it active,
+  instead of marking it done forever.
+- **Outcome:** repeating items stay on the List and roll to their next due date each time
+  they're completed — no re-entry, no clutter.
 
 ---
 
@@ -272,6 +285,32 @@ Scenario: Delete an item
   Then it is removed from my List
 ```
 
+### Feature: Recurring items (UC-11)
+
+```gherkin
+Scenario: Add a monthly recurring bill
+  Given I am on The List
+  When I choose "Bill"
+  And I enter the title "Rent"
+  And I tick "Repeats"
+  And I choose "Every month"
+  And I tap "Add to my list"
+  Then "Rent" appears on my List with a repeat badge showing "monthly"
+
+Scenario: Completing a recurring item rolls it forward
+  Given "Rent" is a monthly recurring bill due 2026-11-01
+  When I tick its checkbox
+  Then it does not stay crossed out as done
+  And its due date moves forward to 2026-12-01
+  And it remains active for next month
+
+Scenario: A one-off item still just completes
+  Given "Electric" is a bill that does not repeat
+  When I tick its checkbox
+  Then it shows as completed with a line through it
+  And it does not roll forward
+```
+
 ### Feature: Theme and sign-out (UC-7, UC-8)
 
 ```gherkin
@@ -327,8 +366,6 @@ requirements stay honest and so they're ready to become future tickets.
 
 - **Real reminders / notifications.** The database stores a `reminder_lead_days` value
   (default 3), but the app does not yet send reminders or nudges ahead of a due date.
-- **Recurring items.** The `items` table has `is_recurring` and `recurs_every`, but the
-  UI does not yet let users create repeating bills/tasks.
 - **Task "first step."** The `items` table has a `first_step` field (a visible first
   action for a task), not yet surfaced in the screens.
 - **Display name / profile editing** beyond balance and income.
