@@ -1,8 +1,8 @@
 "use client";
 
-// Home (Epic 3): the daily glance — Safe-to-Spend + the single next thing.
-// Safe-to-Spend = current balance − unpaid bills. Data now comes from server
-// actions (getProfile, getItems); auth stays in the browser (cookie only).
+// Home (Epic 3): the daily glance — Safe-to-Spend + the single next thing,
+// now with a gentle "Heads up" for anything due within your reminder window.
+// Data comes from server actions; auth stays in the browser (cookie only).
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,6 +23,7 @@ import {
 import { supabase } from "@/lib/supabaseClient";
 import { getItems } from "@/app/actions/items";
 import { getProfile, saveMoney } from "@/app/actions/profile";
+import { dueInfo, dueLabel } from "@/lib/due";
 import ThemeToggle from "../ThemeToggle";
 
 type Item = {
@@ -42,11 +43,13 @@ export default function HomePage() {
   const [items, setItems] = useState<Item[]>([]);
   const [balance, setBalance] = useState<number | null>(null);
   const [income, setIncome] = useState<number | null>(null);
+  const [leadDays, setLeadDays] = useState(3);
 
   // "Set your money" form
   const [editing, setEditing] = useState(false);
   const [balanceInput, setBalanceInput] = useState("");
   const [incomeInput, setIncomeInput] = useState("");
+  const [leadDaysInput, setLeadDaysInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -56,6 +59,7 @@ export default function HomePage() {
       const [prof, itemData] = await Promise.all([getProfile(), getItems()]);
       setBalance(prof?.current_balance ?? null);
       setIncome(prof?.monthly_income ?? null);
+      setLeadDays(prof?.reminder_lead_days ?? 3);
       setItems(itemData);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load your data.");
@@ -91,9 +95,23 @@ export default function HomePage() {
       return a.due_date.localeCompare(b.due_date);
     })[0];
 
+  // Heads up = unfinished items that are overdue / today / within the window,
+  // soonest (and most overdue) first.
+  const dueSoon = items
+    .filter((i) => !i.is_done)
+    .map((i) => ({ item: i, due: dueInfo(i.due_date, leadDays) }))
+    .filter(
+      (x) =>
+        x.due.status === "overdue" ||
+        x.due.status === "today" ||
+        x.due.status === "soon"
+    )
+    .sort((a, b) => (a.due.days ?? 0) - (b.due.days ?? 0));
+
   function startEdit() {
     setBalanceInput(balance != null ? String(balance) : "");
     setIncomeInput(income != null ? String(income) : "");
+    setLeadDaysInput(String(leadDays));
     setError("");
     setEditing(true);
   }
@@ -106,6 +124,7 @@ export default function HomePage() {
       await saveMoney({
         balance: balanceInput !== "" ? Number(balanceInput) : null,
         income: incomeInput !== "" ? Number(incomeInput) : null,
+        leadDays: leadDaysInput !== "" ? Number(leadDaysInput) : null,
       });
       setEditing(false);
       await loadData();
@@ -215,6 +234,14 @@ export default function HomePage() {
                       fullWidth
                       slotProps={{ input: { startAdornment: <Box sx={{ mr: 0.5 }}>$</Box> } }}
                     />
+                    <TextField
+                      label="Remind me this many days ahead"
+                      type="number"
+                      value={leadDaysInput}
+                      onChange={(e) => setLeadDaysInput(e.target.value)}
+                      fullWidth
+                      helperText="How early 'due soon' starts flagging things (default 3)."
+                    />
                     {error && <Alert severity="error">{error}</Alert>}
                     <Stack direction="row" spacing={1}>
                       <Button type="submit" variant="contained" color="primary" disabled={saving}>
@@ -226,6 +253,32 @@ export default function HomePage() {
                     </Stack>
                   </Stack>
                 </Box>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Heads up — due soon */}
+          {dueSoon.length > 0 && (
+            <Card variant="outlined" sx={{ borderColor: "warning.main" }}>
+              <CardContent>
+                <Typography variant="overline" color="text.secondary">
+                  Heads up — {dueSoon.length} {dueSoon.length === 1 ? "thing" : "things"} due soon
+                </Typography>
+                <Stack spacing={1} sx={{ mt: 1 }}>
+                  {dueSoon.map(({ item, due }) => (
+                    <Stack key={item.id} direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap" }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                        {item.title}
+                      </Typography>
+                      <Chip
+                        size="small"
+                        variant="outlined"
+                        color={due.status === "overdue" ? "error" : "warning"}
+                        label={dueLabel(due)}
+                      />
+                    </Stack>
+                  ))}
+                </Stack>
               </CardContent>
             </Card>
           )}

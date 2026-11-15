@@ -1,9 +1,8 @@
 "use client";
 
 // The List (Epic 2): the unified money + time list.
-// UI runs in the browser; all DATABASE work now goes through server actions
-// (app/actions/items.ts). Auth session checks still use the browser client,
-// since those just read the sign-in cookie — not the database tables.
+// UI runs in the browser; all DATABASE work goes through server actions.
+// Auth session checks still use the browser client (sign-in cookie only).
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -28,6 +27,8 @@ import {
 } from "@mui/material";
 import { supabase } from "@/lib/supabaseClient";
 import { getItems, addItem, toggleItem, deleteItem } from "@/app/actions/items";
+import { getProfile } from "@/app/actions/profile";
+import { dueInfo, dueLabel } from "@/lib/due";
 import ThemeToggle from "../ThemeToggle";
 
 type ItemType = "bill" | "task";
@@ -57,6 +58,7 @@ export default function ListPage() {
   const [checking, setChecking] = useState(true);
   const [items, setItems] = useState<Item[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
+  const [leadDays, setLeadDays] = useState(3);
 
   // Add-item form fields
   const [type, setType] = useState<ItemType>("bill");
@@ -68,19 +70,20 @@ export default function ListPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // READ via the server action.
+  // READ the list AND the reminder window, together.
   const loadItems = useCallback(async () => {
     setLoadingItems(true);
     try {
-      const data = await getItems();
+      const [data, prof] = await Promise.all([getItems(), getProfile()]);
       setItems(data);
+      setLeadDays(prof?.reminder_lead_days ?? 3);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not load your list.");
     }
     setLoadingItems(false);
   }, []);
 
-  // Require sign-in, then load the list.
+  // Require sign-in, then load.
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
@@ -255,57 +258,71 @@ export default function ListPage() {
             </Typography>
           ) : (
             <Stack spacing={1.5}>
-              {items.map((item) => (
-                <Card key={item.id} variant="outlined">
-                  <CardContent sx={{ display: "flex", alignItems: "center", gap: 1, "&:last-child": { pb: 2 } }}>
-                    <Checkbox
-                      checked={item.is_done}
-                      onChange={() => toggleDone(item)}
-                      aria-label={`Mark ${item.title} done`}
-                    />
-                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                      <Typography
-                        sx={{
-                          textDecoration: item.is_done ? "line-through" : "none",
-                          color: item.is_done ? "text.secondary" : "text.primary",
-                          fontWeight: 500,
-                        }}
-                      >
-                        {item.title}
-                      </Typography>
-                      <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 0.5, flexWrap: "wrap" }}>
-                        <Chip
-                          size="small"
-                          label={item.type === "bill" ? "Bill" : "Task"}
-                          color={item.type === "bill" ? "tertiary" : "secondary"}
-                          variant="outlined"
-                        />
-                        {item.is_recurring && item.recurs_every && (
+              {items.map((item) => {
+                // How urgent is this one? (only nag about unfinished items)
+                const due = dueInfo(item.due_date, leadDays);
+                const badge = item.is_done ? null : dueLabel(due);
+
+                return (
+                  <Card key={item.id} variant="outlined">
+                    <CardContent sx={{ display: "flex", alignItems: "center", gap: 1, "&:last-child": { pb: 2 } }}>
+                      <Checkbox
+                        checked={item.is_done}
+                        onChange={() => toggleDone(item)}
+                        aria-label={`Mark ${item.title} done`}
+                      />
+                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                        <Typography
+                          sx={{
+                            textDecoration: item.is_done ? "line-through" : "none",
+                            color: item.is_done ? "text.secondary" : "text.primary",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {item.title}
+                        </Typography>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center", mt: 0.5, flexWrap: "wrap" }}>
                           <Chip
                             size="small"
-                            label={`↻ ${RECUR_LABEL[item.recurs_every]}`}
-                            color="primary"
+                            label={item.type === "bill" ? "Bill" : "Task"}
+                            color={item.type === "bill" ? "tertiary" : "secondary"}
                             variant="outlined"
                           />
-                        )}
-                        {item.amount != null && (
-                          <Typography variant="body2" color="text.secondary">
-                            ${item.amount.toFixed(2)}
-                          </Typography>
-                        )}
-                        {item.due_date && (
-                          <Typography variant="body2" color="text.secondary">
-                            due {item.due_date}
-                          </Typography>
-                        )}
-                      </Stack>
-                    </Box>
-                    <Button size="small" variant="text" color="secondary" onClick={() => removeItem(item)}>
-                      Delete
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+                          {item.is_recurring && item.recurs_every && (
+                            <Chip
+                              size="small"
+                              label={`↻ ${RECUR_LABEL[item.recurs_every]}`}
+                              color="primary"
+                              variant="outlined"
+                            />
+                          )}
+                          {badge && (
+                            <Chip
+                              size="small"
+                              label={badge}
+                              color={due.status === "overdue" ? "error" : "warning"}
+                              variant="outlined"
+                            />
+                          )}
+                          {item.amount != null && (
+                            <Typography variant="body2" color="text.secondary">
+                              ${item.amount.toFixed(2)}
+                            </Typography>
+                          )}
+                          {item.due_date && (
+                            <Typography variant="body2" color="text.secondary">
+                              due {item.due_date}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Box>
+                      <Button size="small" variant="text" color="secondary" onClick={() => removeItem(item)}>
+                        Delete
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </Stack>
           )}
 
