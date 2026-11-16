@@ -373,4 +373,6 @@ requirements stay honest and so they're ready to become future tickets.
 ---
 
 *Use this as the acceptance criteria for the Week 3 backlog ticket, and walk the
-"Built" BDD scenarios by hand against the live app before you submit.*
+"Built" BDD scenarios by hand against the live app before you submit. The concrete,
+runnable version of these scenarios — with exact data and pass/fail boxes — lives in
+[`test-cases.md`](./test-cases.md); the decision maps are in [`flows.md`](./flows.md).*
