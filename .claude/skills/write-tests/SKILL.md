@@ -1,6 +1,5 @@
 ---
 name: write-tests
-description: Use when I say "write tests for this," "add tests for," "run tests for," "add a test for this bug," "test this function," "make sure this is tested," or "do I have enough test coverage?"
 ---
 
 # Write Tests
