@@ -34,6 +34,9 @@ export default function ThemeToggle() {
   // The hook has no value until the component mounts on the client, so we wait
   // to render the real icon to avoid a server/client mismatch.
   const [mounted, setMounted] = useState(false);
+  // Runs once after mount. The mounted flag is itself the hydration-safe guard
+  // this rule warns about, so we intentionally opt this one line out.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {

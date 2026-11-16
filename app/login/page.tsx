@@ -33,8 +33,13 @@ export default function LoginPage() {
     });
   }, [router]);
 
-  // Pre-fill the email we remembered from a previous sign-in (convenience only).
+   // Pre-fill the email we remembered from a previous sign-in (convenience only).
+  // This reads localStorage, which only exists in the browser, so it MUST run in
+  // an effect (never during render) to avoid a server/client hydration mismatch.
+  // That makes the synchronous setState below the correct pattern here, so we opt
+  // this one block out of the react-hooks/set-state-in-effect rule on purpose.
   useEffect(() => {
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const saved = localStorage.getItem("momentum:lastEmail");
       if (saved) {
@@ -44,6 +49,7 @@ export default function LoginPage() {
     } catch {
       // localStorage can be blocked (private mode) — just skip the convenience.
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   async function handleSubmit(event: React.FormEvent) {
