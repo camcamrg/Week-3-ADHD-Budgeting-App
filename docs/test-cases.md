@@ -40,7 +40,7 @@ result to look for. Run these against the live app before every submission.
 
 | # | Steps | Expected result | Result |
 |---|-------|-----------------|--------|
-| 2.1 | Open the landing page while **signed out** | You see "Get started" and "I already have an account"; both lead to sign-in | ⬜ |
+| 2.1 | Open the landing page while **signed out** | You see "Get started" and "I already have an account"; both lead to sign-in | ✅ |
 | 2.2 | Open the landing page while **signed in** | You see a single "Continue" button that goes to Home | ⬜ |
 
 ---
@@ -51,7 +51,7 @@ result to look for. Run these against the live app before every submission.
 | # | Steps | Expected result | Result |
 |---|-------|-----------------|--------|
 | 3.1 | Signed in, open the account page | Shows "Signed in as &lt;your email&gt;" with a way into the app and a Sign out button | ⬜ |
-| 3.2 | Signed out, open the account page | Tells you there's no active session and offers a sign-in link | ⬜ |
+| 3.2 | Signed out, open the account page | Tells you there's no active session and offers a sign-in link | ✅ |
 
 ---
 
@@ -60,8 +60,8 @@ result to look for. Run these against the live app before every submission.
 
 | # | Steps | Expected result | Result |
 |---|-------|-----------------|--------|
-| 4.1 | Signed out, open Home directly by URL | Redirected to the sign-in page | ⬜ |
-| 4.2 | Signed out, open The List directly by URL | Redirected to the sign-in page | ⬜ |
+| 4.1 | Signed out, open Home directly by URL | Redirected to the sign-in page | ✅ |
+| 4.2 | Signed out, open The List directly by URL | Redirected to the sign-in page | ✅ |
 
 ---
 
@@ -72,7 +72,7 @@ result to look for. Run these against the live app before every submission.
 |---|-------|-----------|-----------------|--------|
 | 5.1 | Fresh account, open Home before entering a balance | — | You're prompted to add your balance to see what's safe to spend | ⬜ |
 | 5.2 | Enter a balance, leave monthly income blank, save | Balance **$1,000** | Saves fine; Safe-to-Spend calculates without needing income | ⬜ |
-| 5.3 | Add one unpaid bill, return to Home | Balance **$1,000**, bill **$300** | Safe-to-Spend shows **$700.00** | ⬜ |
+| 5.3 | Add one unpaid bill, return to Home | Balance **$1,000**, bill **$300** | Safe-to-Spend shows **$700.00** | ✅ |
 | 5.4 | Make bills exceed the balance | Balance **$200**, bills total **$500** | Safe-to-Spend shows **-$300.00** with a kind, shame-free message | ⬜ |
 | 5.5 | Mark a bill done, return to Home | Balance **$1,000**, a **$300** bill marked done | Safe-to-Spend returns to **$1,000.00** (paid bills don't reduce it) | ⬜ |
 
@@ -120,11 +120,11 @@ result to look for. Run these against the live app before every submission.
 | # | Steps | Test data | Expected result | Result |
 |---|-------|-----------|-----------------|--------|
 | 9.1 | Set the reminder window in the money form | "Remind me this many days ahead" = **3** | Value saves and persists after reload | ⬜ |
-| 9.2 | Have an item due within the window | due in **2 days**, lead = 3 | The List shows a "⏰ in 2 days" badge (warning colour) | ⬜ |
+| 9.2 | Have an item due within the window | due in **2 days**, lead = 3 | The List shows a "⏰ in 2 days" badge (warning colour) | ✅ |
 | 9.3 | Have an item due today | due **today** | Badge reads "⏰ due today" | ⬜ |
 | 9.4 | Have an overdue item | due **yesterday** | Badge reads "⚠️ 1 day overdue" in an error (red) colour | ⬜ |
 | 9.5 | Have an item outside the window | due in **10 days**, lead = 3 | No urgency badge appears on that item | ⬜ |
-| 9.6 | Open Home with 1+ items due within the window | — | A "Heads up — N things due soon" card lists each one with its badge | ⬜ |
+| 9.6 | Open Home with 1+ items due within the window | — | A "Heads up — N things due soon" card lists each one with its badge | ✅ |
 | 9.7 | Open Home with nothing due within the window | — | No "Heads up" card is shown | ⬜ |
 | 9.8 | Mark a due-soon item done | — | Its badge disappears (done items aren't nagged) and it drops off the Heads-up card | ⬜ |
 | 9.9 | Change the lead-days value and re-check | lead **3 → 1** | An item due in 2 days no longer counts as "due soon"; raising it back includes it again | ⬜ |
@@ -148,8 +148,8 @@ result to look for. Run these against the live app before every submission.
 
 | # | Steps | Expected result | Result |
 |---|-------|-----------------|--------|
-| 11.1 | As **Account A**, add an item. In an incognito window, sign in as **Account B** and open The List | Account B sees an empty list — none of Account A's data | ⬜ |
-| 11.2 | Return to **Account A**'s session and open The List | Account A's item is still there | ⬜ |
+| 11.1 | As **Account A**, add an item. In an incognito window, sign in as **Account B** and open The List | Account B sees an empty list — none of Account A's data | ✅ |
+| 11.2 | Return to **Account A**'s session and open The List | Account A's item is still there | ✅ |
 | 11.3 | Attempt to read the `items` table while logged out (e.g. a direct query script) | Zero rows returned — the database refuses, not just the screen | ⬜ |
 
 ---
@@ -170,7 +170,28 @@ Record each full pass so you can show the app was verified before submission.
 
 | Date | Tester | Build / commit | Pass | Fail | Notes |
 |------|--------|----------------|------|------|-------|
-| 2026-__-__ | Cameron | `________` | | | |
+| 2026-11-16 | Cameron | `4dc2184` (production) | 9 | 0 | Hand-tested on the live production site (https://week-3-adhd-budgeting-app.vercel.app). See the per-scenario results below. |
+
+### 2026-11-16 run — detail
+
+Tested against **live production** (`main` @ `4dc2184`) after the first launch.
+
+**Signed-out scenarios (verified in-browser):**
+- **TC-2.1** Landing page signed out → both "Get started" and "I already have an account" present. ✅ Pass
+- **TC-3.2** Account page signed out → "Not signed in" message shown. ✅ Pass
+- **TC-4.1** Opening `/home` signed out → redirected to the sign-in page. ✅ Pass
+- **TC-4.2** Opening `/list` signed out → redirected to the sign-in page. ✅ Pass
+
+**Signed-in scenarios (hand-tested by Cameron):**
+- **TC-5.3** Balance $1,000 − unpaid bill $300 → Home Safe-to-Spend shows **$700.00**. ✅ Pass
+- **TC-9.2** Item due in 2 days → The List shows a "⏰ in 2 days" badge. ✅ Pass
+- **TC-9.6** With a due-soon item → Home shows the "Heads up — … due soon" card. ✅ Pass
+
+**Earlier in the project (data-isolation / RLS):**
+- **TC-11.1** Second account (incognito) saw an empty list — none of Account A's data. ✅ Pass
+- **TC-11.2** Account A still retained its own item afterward. ✅ Pass
+
+Result: **9 scenarios run, 9 passed, 0 failed.**
 
 ---
 
