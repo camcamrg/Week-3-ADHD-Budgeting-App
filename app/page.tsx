@@ -62,9 +62,9 @@ export default function Home() {
             color="text.secondary"
             sx={{ maxWidth: 440 }}
           >
-            A calm place to stay on top of your money and your time. See
-            what&apos;s safe to spend, and what&apos;s coming up next — without
-            the overwhelm.
+            Small choices, steady ripples. Each decision about your money
+            and your time builds on the last — until staying on top of things
+            feels like a habit, not a battle.
           </Typography>
 
           <Stack
