@@ -7,13 +7,13 @@ build, convert each of these into its own file under `docs/adr/`.
 ## Pending
 
 ### 1. Reminders: PWA push notifications + email, calendar sync deferred
-- **Decision:** Momentum delivers proactive reminders through **PWA web push
+- **Decision:** Steady Ripple delivers proactive reminders through **PWA web push
   notifications** (service worker + a scheduled job) with **email reminders** as a
   reliable backstop. The app nudges users directly; it does **not** depend on a
   user's external calendar to remind them.
 - **Calendar connection:** deferred, not in MVP. If added later, use the
   lightweight path — an "Add to Calendar" (`.ics`) button and/or a subscribable
-  one-way feed (Momentum → user's calendar) — rather than full two-way
+  one-way feed (Steady Ripple → user's calendar) — rather than full two-way
   Google/Apple OAuth sync.
 - **Why:** Push + email covers the reminder need without the heavy OAuth,
   app-verification, and Apple CalDAV work that calendar sync requires. Follows

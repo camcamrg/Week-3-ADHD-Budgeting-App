@@ -1,6 +1,6 @@
-# Momentum — Use Cases & BDD Scenarios
+# Steady Ripple — Use Cases & BDD Scenarios
 
-**What this is:** the documented requirements for Momentum (MVP #1), written in two
+**What this is:** the documented requirements for Steady Ripple (MVP #1), written in two
 layers. **Use cases** describe *what a person is trying to do*. **BDD scenarios**
 (Given / When / Then) describe *the exact, testable behaviour* that proves each use
 case works. Together they double as (1) the backlog ticket's acceptance criteria and
@@ -15,7 +15,7 @@ MVP does not do yet, so this document never over-claims.
 ## Actors
 
 - **User** — an adult with ADHD managing money + time in one place. The only human actor.
-- **System** — the Momentum app (Next.js screens) plus Supabase (database + auth).
+- **System** — the Steady Ripple app (Next.js screens) plus Supabase (database + auth).
 
 ---
 
@@ -335,7 +335,7 @@ Scenario: Sign out
 
 ```gherkin
 Scenario: I only ever see my own data
-  Given another person also uses Momentum
+  Given another person also uses Steady Ripple
   When I view my List and my Home
   Then I see only the bills, tasks, and money that I created
   And never anyone else's

@@ -5,7 +5,7 @@
 
 ## Context
 
-Momentum's mission is to offer people with ADHD an easier way to budget money
+Steady Ripple's mission is to offer people with ADHD an easier way to budget money
 and manage time. It needs to remember bills and tasks between visits, handle
 sign-in/accounts, and enforce Row-Level Security (each person sees only their own
 data) — so we needed a place for the data to be stored.

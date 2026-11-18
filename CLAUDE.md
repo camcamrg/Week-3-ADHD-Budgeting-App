@@ -1,6 +1,6 @@
-# Momentum — project guide for Claude
+# Steady Ripple — project guide for Claude
 
-Momentum is a calm, ADHD-friendly budgeting web app (money + time in one place).
+Steady Ripple is a calm, ADHD-friendly budgeting web app (money + time in one place).
 Three-tier: Next.js + Material UI (screens) → Vercel (hosting) → Supabase (database).
 
 ## Architectural Decision Records

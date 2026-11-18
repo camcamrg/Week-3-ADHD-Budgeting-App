@@ -1,4 +1,4 @@
-# Momentum — User Flows
+# Steady Ripple — User Flows
 
 Visual companions to [`use-cases-and-bdd.md`](./use-cases-and-bdd.md). Each flow is the
 *map* of one feature's BDD scenarios: the paths a user takes and every decision point
@@ -17,7 +17,7 @@ happens next.
 
 ```mermaid
 flowchart TD
-    A([Open Momentum]) --> B{Already signed in?}
+    A([Open Steady Ripple]) --> B{Already signed in?}
     B -- Yes --> H[Home screen]
     B -- No --> L[Sign-in page]
     L --> M{Email remembered<br/>on this device?}

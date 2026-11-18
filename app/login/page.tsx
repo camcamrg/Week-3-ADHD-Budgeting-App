@@ -1,7 +1,7 @@
 "use client";
 
 // Passwordless sign-in: the user enters their email and gets a magic link.
-// No password is ever created or stored (per the Momentum spec).
+// No password is ever created or stored (per the Steady Ripple spec).
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ export default function LoginPage() {
   useEffect(() => {
     /* eslint-disable react-hooks/set-state-in-effect */
     try {
-      const saved = localStorage.getItem("momentum:lastEmail");
+      const saved = localStorage.getItem("steadyripple:lastEmail");
       if (saved) {
         setEmail(saved);
         setRemembered(true);
@@ -60,7 +60,7 @@ export default function LoginPage() {
     // Remember the email as soon as they try — even if the send fails
     // (e.g. rate limit), so we never lose what they typed.
     try {
-      localStorage.setItem("momentum:lastEmail", email);
+      localStorage.setItem("steadyripple:lastEmail", email);
     } catch {
       // ignore if storage is unavailable
     }

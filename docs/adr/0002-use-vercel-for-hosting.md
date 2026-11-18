@@ -5,7 +5,7 @@
 
 ## Context
 
-Momentum needs to be hosted on a web server that's reachable on the internet,
+Steady Ripple needs to be hosted on a web server that's reachable on the internet,
 always on, and not on my computer. Its code already lives on GitHub.
 
 ## Options considered
@@ -18,7 +18,7 @@ always on, and not on my computer. Its code already lives on GitHub.
 ## Decision
 
 We will use **Vercel**, because it was built to optimize Next.js and auto-deploys
-from GitHub on every push — so Momentum runs smoothly with almost no server work.
+from GitHub on every push — so Steady Ripple runs smoothly with almost no server work.
 
 ## Consequences
 

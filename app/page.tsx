@@ -54,7 +54,7 @@ export default function Home() {
           />
 
           <Typography component="h1" variant="h1" color="text.primary">
-            Momentum
+            Steady Ripple
           </Typography>
 
           <Typography

@@ -3,7 +3,7 @@
 import { createTheme } from "@mui/material/styles";
 
 /**
- * Momentum's design system theme — the single source of truth for how the app
+ * Steady Ripple's design system theme — the single source of truth for how the app
  * looks (Box 17: "the theme is one file that holds your design tokens").
  *
  * Vibe: warm, cozy, "dopamine UX" — calm teal/sage anchors with warm

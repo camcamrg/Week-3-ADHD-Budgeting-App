@@ -1,6 +1,6 @@
 # Troubleshooting — issues we hit and how we fixed them
 
-A running log of the real problems that came up while building Momentum, what
+A running log of the real problems that came up while building Steady Ripple, what
 caused each one, and the fix. Written so future-me (and anyone reading the repo)
 doesn't have to rediscover them. Newest lessons tend to be the subtle ones, so
 read the whole thing before a big change.
@@ -160,7 +160,7 @@ each user may touch.
 show us as signed in (and vice versa).
 
 **Cause:** Not a bug. Login sessions are stored **per domain**. A session created
-on `localhost:3000` is a different domain from `week-3-adhd-budgeting-app.vercel.app`,
+on `localhost:3000` is a different domain from `steadyripple.vercel.app`,
 so they don't share sign-in.
 
 **Fix:** Sign in separately on each domain you're using.

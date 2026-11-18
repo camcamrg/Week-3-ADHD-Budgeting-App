@@ -157,7 +157,7 @@ export default function HomePage() {
           {/* Header */}
           <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between" }}>
             <Typography component="h1" variant="h1" sx={{ fontSize: "1.75rem" }}>
-              Momentum
+              Steady Ripple
             </Typography>
             <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
               <ThemeToggle />

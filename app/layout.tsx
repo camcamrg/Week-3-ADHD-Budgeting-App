@@ -12,7 +12,7 @@ import "./globals.css";
 import theme from "./theme";
 
 export const metadata: Metadata = {
-  title: "Momentum",
+  title: "Steady Ripple",
   description:
     "A calm, ADHD-friendly way to stay on top of your money and your time.",
 };

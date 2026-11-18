@@ -1,4 +1,4 @@
-# Momentum — Database Diagram
+# Steady Ripple — Database Diagram
 
 A picture of the database: the tables, their columns, and how they connect.
 (This is an **ER diagram** — Entity Relationship. GitHub renders the Mermaid block below as a diagram.)

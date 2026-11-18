@@ -1,6 +1,6 @@
-# Momentum — Test Cases
+# Steady Ripple — Test Cases
 
-**What this is:** the concrete, by-hand test recipes that prove Momentum works. Where
+**What this is:** the concrete, by-hand test recipes that prove Steady Ripple works. Where
 [`use-cases-and-bdd.md`](./use-cases-and-bdd.md) says *what* the app should do, this
 document says *exactly how to check it*: the preconditions, the data to enter, the steps,
 and the result to look for. Run these against the live app before every submission.

@@ -78,7 +78,7 @@ export default function AccountPage() {
               </Typography>
               <Stack direction="row" spacing={1.5}>
                 <Button variant="contained" color="primary" component={Link} href="/home">
-                  Go to Momentum
+                  Go to Steady Ripple
                 </Button>
                 <Button variant="outlined" color="primary" onClick={handleSignOut}>
                   Sign out

@@ -1,4 +1,4 @@
-// Momentum — the BROWSER Supabase client.
+// Steady Ripple — the BROWSER Supabase client.
 // Used for auth only (sign in / out, checking the session). Now cookie-based
 // (via @supabase/ssr) so the SERVER can see the same sign-in.
 

@@ -5,7 +5,7 @@
 
 ## Context
 
-Momentum is a three-tier progressive web app whose screens (tier 1) need to be
+Steady Ripple is a three-tier progressive web app whose screens (tier 1) need to be
 calm and accessible for people with ADHD (WCAG 2.2 AA). We needed a way to build
 those screens, ideally one that could also hold our server code (tier 2) in the
 same project, that runs on Vercel and is approachable for someone newer to coding.

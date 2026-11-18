@@ -1,16 +1,16 @@
-# Momentum
+# Steady Ripple
 
 A calm, ADHD-friendly budgeting app that keeps **money and time in one place**.
 
 Most budgeting apps assume you'll remember to come back, read a chart, and do the
-math. Momentum is built the opposite way: it's quiet, it tells you the one number
+math. Steady Ripple is built the opposite way: it's quiet, it tells you the one number
 and the one next thing, and it's forgiving when you've been away. The whole MVP is
 **"two screens and one rule":**
 
 - **The List** — your bills *and* your tasks in a single list, sorted by what's due next.
 - **Home** — your **Safe-to-Spend** (money you can spend without missing a bill) plus the single next thing to do.
 
-🔗 **Live app:** https://week-3-adhd-budgeting-app.vercel.app/
+🔗 **Live app:** https://steadyripple.vercel.app/
 
 ---
 

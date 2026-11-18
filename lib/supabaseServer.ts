@@ -1,4 +1,4 @@
-// Momentum — the SERVER Supabase client.
+// Steady Ripple — the SERVER Supabase client.
 // Server actions / routes call this to read & write the database AS the
 // signed-in user, by reading their session from the request's cookies.
 

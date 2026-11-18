@@ -1,10 +1,10 @@
-# Momentum — Architecture Plan
+# Steady Ripple — Architecture Plan
 
 This is the "how the app is built" plan: the three tiers, how data flows between
 them, and how a user signs in. Written as the target design we build toward (see
 also the ADRs in `docs/adr/` for *why* each major tool was chosen).
 
-Momentum is a calm, ADHD-friendly app for money **and** time in one place. The MVP
+Steady Ripple is a calm, ADHD-friendly app for money **and** time in one place. The MVP
 is "two screens and one rule": a unified **List** of bills + tasks, and a **Home**
 screen showing **Safe-to-Spend**.
 
