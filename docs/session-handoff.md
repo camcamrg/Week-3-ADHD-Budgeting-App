@@ -2,7 +2,7 @@
 
 **Purpose of this file:** a context primer to "dogfeed" a fresh Claude session so it can
 pick up this project without re-discovering everything. Hand this file to the new session
-first. Written 2026-11-16.
+first. Written 2026-11-16; last updated 2026-11-19 (rebrand + tagline).
 
 > This is a working note, not a spec. The source-of-truth docs are
 > [`use-cases-and-bdd.md`](./use-cases-and-bdd.md), [`flows.md`](./flows.md),
@@ -104,7 +104,32 @@ The 5-item residency checklist is **complete**:
   "Test cases & manual test pass" (both Phase 7 — Hardening, Done).
 
 ### Launched
-Merged `dev` → `main` (commit `4dc2184`) — the CI work is live in production.
+- CI work: merged `dev` → `main` (commit `4dc2184`), live in production.
+- Rebrand + tagline (2026-11-18/19): further `dev` → `main` merges shipped the
+  Momentum → Steady Ripple rename and the new landing tagline.
+
+### Rebrand: Momentum → Steady Ripple (complete, 2026-11-18/19)
+- **New name + URL:** app renamed Momentum → **Steady Ripple**, live at
+  `https://steadyripple.vercel.app` (Vercel *project* renamed to claim the URL; the old
+  `week-3-adhd-budgeting-app.vercel.app` still works as a fallback).
+- **No code change was needed for the URL move:** the login redirect is built from
+  `window.location.origin`, so it follows whatever domain serves the app. The one hard
+  dependency was Supabase's Auth **redirect allow-list** — the new URL had to be added there
+  (kept the old URL + `localhost` too) or magic-link sign-in breaks. Sign-in was verified
+  end-to-end on the new URL.
+- **Repo:** every `Momentum` → `Steady Ripple` (code, docs, comments); `package.json` name →
+  `steady-ripple`; `.claude/launch.json` name; localStorage key → `steadyripple:lastEmail`
+  (returning users retype their email once — harmless).
+- **Landing tagline (2026-11-19):** [app/page.tsx](app/page.tsx) now reads *"Small choices,
+  steady ripples. Each decision about your money and your time builds on the last — until
+  staying on top of things feels like a habit, not a battle."*
+- **Notion:** the hub, its nested pages (Vision, Use Cases, Backlog, Architecture), the
+  Product Specifications page, and the Build Backlog database are all renamed to Steady
+  Ripple. The hub's rename log keeps the one intentional "Momentum → Steady Ripple" line.
+- **Name choice:** picked after checking that distinctive single/invented words were mostly
+  taken (Ripple, Driftless, Traction, Echo, NextStep, Undrift, EchoFlow). "Steady Ripple" =
+  calm/steady (ADHD-friendly) + ripple (choices compounding); `steadyripple.vercel.app` was
+  the rare exact-match that was free.
 
 ---
 
@@ -133,17 +158,11 @@ Merged `dev` → `main` (commit `4dc2184`) — the CI work is live in production
 
 ## 5. Open / pending items
 
-- **Rebrand to "Steady Ripple" (in progress, 2026-11-18).** The app was renamed from
-  Momentum → **Steady Ripple**. New public URL will be `steadyripple.vercel.app`. Repo text
-  (code, docs, `package.json`, launch config, saved-email storage key) is done on `dev`.
-  Still to finish: claim the Vercel URL, add the new URL to Supabase Auth redirect allow-list
-  (or magic-link sign-in breaks), update the live-URL links in docs once confirmed, rename
-  the Supabase project (cosmetic), and update the Notion hub link.
-- **Merge `dev` → `main` again** when ready, to bring the latest doc updates
-  (test-cases Preconditions/Actual-result columns, use-cases link) into production. They're
-  currently dev-only.
-- **Submission:** email to `mdenner@techfleet.org`, due Monday.
+- **Supabase project *label*** — dashboard-cosmetic only; rename it to "Steady Ripple" if not
+  already done. Nothing depends on it (the database, keys, and URLs are unaffected).
+- **Submission:** email to `mdenner@techfleet.org` (per the Week 2 Coding Challenge page).
 - **Remaining MVP epics/features** — estimated ~8–12 sessions, not started.
+- **Dev server** was left paused at the end of the rebrand session; restart it when needed.
 
 ---
 
@@ -154,6 +173,8 @@ Merged `dev` → `main` (commit `4dc2184`) — the CI work is live in production
 - CI: `.github/workflows/ci.yml`, `scripts/check-skills.mjs`
 - Skills: `.claude/skills/`
 - Docs: `docs/use-cases-and-bdd.md`, `docs/flows.md`, `docs/test-cases.md`, `docs/adr/`
-- Notion: hub `411c448e-a893-8141-b85d-defb09fbbafa`; consolidated spec page
-  `419c448e-a893-814e-86ce-d68b4d0a2c73`
+- Notion: hub `411c448e-a893-8141-b85d-defb09fbbafa` (now titled "Steady Ripple");
+  consolidated Use Cases/BDD/Flows/Tests page `419c448e-a893-814e-86ce-d68b4d0a2c73`;
+  Product Specifications `405c448e-a893-81e5-8f23-d1cbccc70410`; Build Backlog database
+  `95af0f6f-8f5d-4808-ade4-dbf360a7017d`
 - Claude memory: `/Users/cameronguest/.claude/projects/-Users-cameronguest-Documents-Week-3-ADHD-Budgeting-App/memory/`
